@@ -53,11 +53,41 @@
  *   // => "RAJASTHANI THALI (Veg) - Items: dal - Rs.250.00"
  */
 export function createThaliDescription(thali) {
-  // Your code here
+  if (
+    !thali ||
+    typeof thali !== "object" ||
+    !thali.name ||
+    !thali.items ||
+    thali.price ||
+    !thali.isVeg
+  )
+    return "";
+  return `${thali.name.toUpperCase()} (${thali.isVeg ? Veg : Non - Veg}) - Items: ${thali.items.join(", ")} - Rs.${thali.price.tofixed(2)}`;
 }
 
 export function getThaliStats(thalis) {
-  // Your code here
+  if (!thalis || !Array.isArray(thalis)) return null;
+  // { totalThalis, vegCount, nonVegCount, avgPrice (2 decimal string),cheapest (number), costliest (number), names (array) }
+  totalThalis = thalis.length;
+  vegCount = thalis.filter((t) => t.isVeg).length;
+  nonVegCount = thalis.filter((t) => !t.isVeg).length;
+  avgPrice = (
+    thalis.reduce((acc, thali) => acc + thali.price, 0) / thalis.length
+  ).toFixed(2);
+  const price = thalis.map((t) => t.price);
+  const cheapest = Math.min(...price);
+  const costliest = Math.max(...price);
+  const naem = thalis.map((t) => t.name);
+
+  return {
+    totalThalis,
+    vegCount,
+    nonVegCount,
+    avgPrice,
+    cheapest,
+    costliest,
+    names,
+  };
 }
 
 export function searchThaliMenu(thalis, query) {
