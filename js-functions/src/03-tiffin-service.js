@@ -40,13 +40,44 @@
  *   // => { totalCustomers: 3, totalRevenue: 7200, mealBreakdown: { veg: 2, nonveg: 1 } }
  */
 export function createTiffinPlan({ name, mealType = "veg", days = 30 } = {}) {
-  // Your code here
+  if (!name || typeof name !== "string" || name.trim() === "") return null;
+  if (!days || !Number.isInteger(days) || isNaN(days) || days <= 0) return null;
+
+  const mealPrice = {
+    veg: 80,
+    nonveg: 120,
+    jain: 90,
+  };
+
+  if (!Object.keys(mealPrice).includes(mealType)) return null;
+
+  const dailyRate = mealPrice[mealType];
+  const totalCost = dailyRate * days;
+
+  return { name, mealType, days, dailyRate, totalCost };
 }
 
 export function combinePlans(...plans) {
-  // Your code here
+  if (!plans || typeof plans !== "object" || plans.length === 0) return null;
+  const totalCustomers = plans.length;
+  const totalRevenue = plans.reduce((sum, cost) => sum + cost.totalCost, 0);
+  const mealBreakdown = plans.reduce((acc, meal) => {
+    acc[meal.mealType] = (acc[meal.mealType] || 0) + 1;
+    return acc;
+  }, {});
+
+  return { totalCustomers, totalRevenue, mealBreakdown };
 }
 
 export function applyAddons(plan, ...addons) {
-  // Your code here
+  if (!plan || typeof plan !== "object") return null;
+  if (!addons || typeof addons !== "object" || addons.lengrh === 0) return null;
+
+  const newPlan = structuredClone(plan);
+
+  newPlan.dailyRate =
+    plan.dailyRate + addons.reduce((sum, p) => sum + p.price, 0);
+  newPlan.totalCost = newPlan.dailyRate * newPlan.days;
+  newPlan.addonNames = addons.map((e) => e.name);
+  return newPlan;
 }
