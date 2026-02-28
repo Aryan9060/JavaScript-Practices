@@ -84,8 +84,6 @@ export function createTicketPricer(basePrice) {
 export function createRatingCalculator(weights) {
   if (!weights || typeof weights !== "object") return null;
 
-  // const scores = { story: 8, acting: 9, direction: 7, music: 8 };
-
   return (scores) => {
     if (!scores || typeof scores !== "object") return null;
     let weightedSum = 0;
