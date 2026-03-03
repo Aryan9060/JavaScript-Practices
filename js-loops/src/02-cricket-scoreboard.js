@@ -31,5 +31,36 @@
  *   // => { totalRuns: 0, totalBalls: 0, wickets: 0, fours: 0, sixes: 0 }
  */
 export function cricketScoreboard(balls) {
-  // Your code here
+  if (!balls || !Array.isArray(balls) || balls.length === 0)
+    return { fours: 0, sixes: 0, totalBalls: 0, totalRuns: 0, wickets: 0 };
+
+  const scoreboard = {
+    totalRuns: 0,
+    totalBalls: 0,
+    wickets: 0,
+    fours: 0,
+    sixes: 0,
+  };
+
+  for (let i = 0; i < balls.length; i++) {
+    if (isNaN(balls[i]) || balls[i] < -1 || balls[i] > 6) continue;
+    if (scoreboard.wickets === 10) break;
+
+    scoreboard.totalBalls++;
+    if (balls[i] === -1) {
+      scoreboard.wickets++;
+    } else if (balls[i] === 4) {
+      scoreboard.fours++;
+      scoreboard.totalRuns += balls[i];
+    } else if (balls[i] === 6) {
+      scoreboard.sixes++;
+      scoreboard.totalRuns += balls[i];
+    } else if (balls[i] === 0) {
+      continue;
+    } else {
+      scoreboard.totalRuns += balls[i];
+    }
+  }
+
+  return scoreboard;
 }
