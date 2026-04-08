@@ -67,11 +67,62 @@
  *   // => [{ name: "Priya", side: "bride" }]
  */
 export function setupGuestList(containerElement) {
-  // Your code here
+  if (!containerElement) return null;
+  containerElelment.addEventListener("click", (event) => {
+    if (event.target.classList.contains("remove-btn")) {
+      event.target.parantElement.remove();
+    }
+  });
+  return {
+    addGuest: (name, side) => {
+      const guestItem = document.createElement("div");
+      guestItem.classList.add("guest-item");
+      guestItem.dataset.name = name;
+      guestItem.dataset.side = side;
+      const span = document.createElement("span");
+      span.textContent = name;
+      guestItem.appendChild(span);
+
+      const btn = document.createElement("button");
+      btn.classList.add("remove-btn");
+      btn.textContent = "Remove";
+      guestItem.appendChild(btn);
+      containerElement.appendChild(guestItem);
+      return guestItem;
+    },
+    removeGuest: (name) => {
+      for (const guestItem of containerElement.children) {
+        if (guestItem.dataset.name === name) {
+          containerElement.removeChild(guestItem);
+          return true;
+        }
+      }
+      return false;
+    },
+    getGuests: () => {
+      const guests = [];
+      for (const guestItem of containerElement.children) {
+        guests.push({
+          name: guestItem.dataset.name,
+          side: guestItem.dataset.side,
+        });
+      }
+      return guests;
+    },
+  };
 }
 
 export function setupThemeSelector(containerElement, previewElement) {
-  // Your code here
+  if (!containerElement || !previewElement) return null;
+  containerElement.addEventListener("click", (event) => {
+    if (event.target.classList.contains("theme-btn")) {
+      previewElement.className = event.target.dataset.theme;
+      previewElement.dataset.theme = event.target.dataset.theme;
+    }
+  });
+  return {
+    getTheme: () => previewElement.dataset.theme || null,
+  };
 }
 
 export function setupCardEditor(cardElement) {
