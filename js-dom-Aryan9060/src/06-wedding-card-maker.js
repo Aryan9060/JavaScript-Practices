@@ -68,63 +68,116 @@
  */
 export function setupGuestList(containerElement) {
   if (!containerElement) return null;
-  containerElelment.addEventListener("click", (event) => {
-    if (event.target.classList.contains("remove-btn")) {
-      event.target.parantElement.remove();
+
+  const handleClick = (event) => {
+    const removeBtn = event.target.closest(".remove-btn");
+    if (removeBtn && containerElement.contains(removeBtn)) {
+      const guestItem = removeBtn.closest(".guest-item");
+      if (guestItem) {
+        containerElement.removeChild(guestItem);
+      }
     }
-  });
+  };
+
+  containerElement.addEventListener("click", handleClick);
+
   return {
     addGuest: (name, side) => {
-      const guestItem = document.createElement("div");
-      guestItem.classList.add("guest-item");
-      guestItem.dataset.name = name;
-      guestItem.dataset.side = side;
+      const div = document.createElement("div");
+      div.classList.add("guest-item");
+      div.dataset.name = name;
+      div.dataset.side = side;
+
       const span = document.createElement("span");
       span.textContent = name;
-      guestItem.appendChild(span);
 
       const btn = document.createElement("button");
       btn.classList.add("remove-btn");
       btn.textContent = "Remove";
-      guestItem.appendChild(btn);
-      containerElement.appendChild(guestItem);
-      return guestItem;
+
+      div.appendChild(span);
+      div.appendChild(btn);
+      containerElement.appendChild(div);
+      return div;
     },
     removeGuest: (name) => {
-      for (const guestItem of containerElement.children) {
-        if (guestItem.dataset.name === name) {
-          containerElement.removeChild(guestItem);
-          return true;
-        }
+      const guestItem = containerElement.querySelector(`.guest-item[data-name="${name}"]`);
+      if (guestItem) {
+        containerElement.removeChild(guestItem);
+        return true;
       }
       return false;
     },
     getGuests: () => {
-      const guests = [];
-      for (const guestItem of containerElement.children) {
-        guests.push({
-          name: guestItem.dataset.name,
-          side: guestItem.dataset.side,
-        });
-      }
-      return guests;
+      const items = containerElement.querySelectorAll(".guest-item");
+      return Array.from(items).map((item) => ({
+        name: item.dataset.name,
+        side: item.dataset.side,
+      }));
     },
+    _cleanup: () => containerElement.removeEventListener("click", handleClick),
   };
+  
 }
 
 export function setupThemeSelector(containerElement, previewElement) {
   if (!containerElement || !previewElement) return null;
-  containerElement.addEventListener("click", (event) => {
-    if (event.target.classList.contains("theme-btn")) {
-      previewElement.className = event.target.dataset.theme;
-      previewElement.dataset.theme = event.target.dataset.theme;
-    }
+
+  const themes = ["traditional", "modern", "royal"];
+  themes.forEach((theme) => {
+    const btn = document.createElement("button");
+    btn.classList.add("theme-btn");
+    btn.textContent = theme;
+    btn.dataset.theme = theme;
+    containerElement.appendChild(btn);
   });
+
+  const handleThemeClick = (event) => {
+    const btn = event.target.closest(".theme-btn");
+    if (btn && containerElement.contains(btn)) {
+      const theme = btn.dataset.theme;
+      previewElement.className = theme;
+      previewElement.dataset.theme = theme;
+    }
+  };
+
+  containerElement.addEventListener("click", handleThemeClick);
+
   return {
     getTheme: () => previewElement.dataset.theme || null,
+    _cleanup: () => containerElement.removeEventListener("click", handleThemeClick),
   };
+  
 }
 
 export function setupCardEditor(cardElement) {
   // Your code here
+  if (!cardElement) return null;
+
+  const handleEdit = (event) => {
+    const editable = event.target.closest("[data-editable]");
+    const currentEditing = cardElement.querySelector(".editing");
+
+    if (currentEditing) {
+      currentEditing.contentEditable = "false";
+      currentEditing.classList.remove("editing");
+    }
+
+    if (editable && cardElement.contains(editable)) {
+      editable.contentEditable = "true";
+      editable.classList.add("editing");
+      editable.focus();
+    }
+  };
+
+  cardElement.addEventListener("click", handleEdit);
+
+  return {
+    getContent: (field) => {
+      const element = cardElement.querySelector(`[data-editable="${field}"]`);
+      return element ? element.textContent : null;
+    },
+    _cleanup: () => cardElement.removeEventListener("click", handleEdit)
+  };
+  
 }
