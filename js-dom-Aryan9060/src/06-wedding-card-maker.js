@@ -151,7 +151,6 @@ export function setupThemeSelector(containerElement, previewElement) {
 }
 
 export function setupCardEditor(cardElement) {
-  // Your code here
   if (!cardElement) return null;
 
   const handleEdit = (event) => {
