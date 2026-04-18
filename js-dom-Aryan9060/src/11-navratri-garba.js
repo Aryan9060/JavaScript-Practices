@@ -105,25 +105,49 @@ export function cloneDancer(dancer, deep) {
 }
 
 export function replaceDancer(stage, oldDancer, newDancer) {
-  if(!stage || !oldDancer || !newDancer) return null;
-  stage.replaceChild(oldDancer, newDancer);
-  return oldDancer;
+  if (!stage || !oldDancer || !newDancer) return null;
+  try {
+    return stage.replaceChild(newDancer, oldDancer);
+  } catch (err) {
+    return null;
+  }
+  return null;
 }
 
 export function removeDancer(stage, dancer) {
   if (!stage || !dancer) return null;
-  try{
+  try {
     stage.removeChild(dancer)
-  }catch(err){
+  } catch (err) {
     return null;
   }
   return dancer;
 }
 
 export function rearrangeStage(stage, order) {
-  // Your code here
+  if (!stage || !Array.isArray(order)) return false;
+  const children = Array.from(stage.children);
+  if (order.length !== children.length) return false;
+
+  // Validate indices
+  const isValid = order.every(
+    (index) => typeof index === "number" && index >= 0 && index < children.length
+  );
+  if (!isValid) return false;
+
+  // Re-append in new order
+  order.forEach((index) => {
+    stage.appendChild(children[index]);
+  });
+
+  return true;
+  
 }
 
 export function duplicateFormation(stage) {
-  // Your code here
+  if (!stage) return null;
+  const clone = stage.cloneNode(true);
+  clone.id = `${stage.id}-clone`;
+  return clone;
+
 }
